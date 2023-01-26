@@ -2,10 +2,9 @@ import pygame
 class Sound:
     def __init__(self):
         pygame.mixer.init()
-        self.music_on = True
+        self.music_on = False
         self.bg_music = pygame.mixer.Sound("audio/bg_sound.mp3")
         self.bg_music.set_volume(0.5)
-        self.bg_music.play()
               # -1 means the sound will play indefinitely
     #    self.sound_effects = {
      #       "gunshot": pygame.mixer.Sound("gunshot.ogg"),
