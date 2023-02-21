@@ -1,19 +1,19 @@
-from sys import exit
-from settings import *
+import sys
 import pygame
+from settings import SCREEN_HEIGHT,SCREEN_WIDTH,SELECTED_COLOR,WHITE,main_clock,FPS
 from options import Options
 from singleton import Singleton
 class Menu(Singleton):
     def __init__(self):
         super().__init__()
         pygame.mixer.init()
-        pygame.mouse.set_visible(False)
         self.display_surface = pygame.display.get_surface()
         self.my_font = pygame.font.SysFont("Arial", 20)
         self.menu_items = ["START", "OPTIONS", "QUIT"]
         self.current_menu_items = 0
         self.keyup_pressed = False
         self.menu_img = pygame.image.load("graphics/main_menu_images/menu_image.jpg").convert()
+        pygame.mouse.set_visible(False)
         self.options = Options()
         self.running = True
         self.menu_img.set_alpha(255)
@@ -27,7 +27,7 @@ class Menu(Singleton):
     def inputs_controls(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     self.current_menu_items = (self.current_menu_items - 1) % len(self.menu_items)
@@ -42,13 +42,15 @@ class Menu(Singleton):
                             self.menu_img.set_alpha(0)
                             self.options.run()
                         case "QUIT":
-                            exit()
+                            sys.exit()
     def difficutly(self):
         return self.options.game_modes[self.options.index_game_mode]
+    def is_full_screen(self):
+        return self.options.full_screen
     def draw_menu(self):
         for i,item in enumerate(self.menu_items):
             if i == self.current_menu_items:
-                color = selected_color
+                color = SELECTED_COLOR
                 italic = True
                 arrows = "X "
             else:
@@ -57,12 +59,14 @@ class Menu(Singleton):
                 arrows = ""
             font = pygame.font.SysFont("Arial",40,False,italic)
             text = font.render(arrows+item,False,color)
-            text_rect = text.get_rect(center=(screen_width/2,screen_heigth / 1.5 + (i * 100)))
+            text_rect = text.get_rect(center=(SCREEN_WIDTH/2,SCREEN_HEIGHT / 1.5 + (i * 100)))
             self.display_surface.blit(text,text_rect)
     def run(self):
         while self.running:
             self.menu_transition()
-            self.fps_txt = self.my_font.render("Fps:" + str(round(main_clock.get_fps(),1)),False,(255,255,255))
+            self.fps_txt = self.my_font.render(
+                    "Fps:" + str(round(main_clock.get_fps(),1)),False,WHITE
+                    )
             #navigation menu
             self.inputs_controls()
             #bg menu img
@@ -71,5 +75,5 @@ class Menu(Singleton):
             #drawing menu
             self.draw_menu()
             self.display_surface.blit(self.fps_txt,(0,0))
-            main_clock.tick()
+            main_clock.tick(FPS)
             pygame.display.update()

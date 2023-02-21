@@ -1,5 +1,6 @@
-from settings import *
+import sys
 import pygame
+from settings import SCREEN_HEIGHT,SCREEN_WIDTH,SELECTED_COLOR,WHITE,FPS,main_clock
 from sound import Sound
 class Options:
     def __init__(self):
@@ -9,7 +10,7 @@ class Options:
         self.rain_status = ["OFF","ON"]
         self.sound_system = ['OFF','ON']
         self.options_items = ["DIFFICULTY","SOUND","RAIN","RESOLUTION"]
-        self.resolution = [f"{screen_width}x{screen_heigth}","Fullscreen"]
+        self.resolution = [f"{SCREEN_WIDTH}x{SCREEN_HEIGHT}","Fullscreen"]
         self.game_modes = ["EASY","MEDIUM","HARD"]
         self.colors_difficulty = ["#33de61","#e38819","#e32a19"]
         self.index_game_mode = 0
@@ -22,6 +23,7 @@ class Options:
         self.options_img.set_alpha(0)
         self.transtion_step = 5
         self.transtion = True
+        self.full_screen = False
     
     def options_transtion(self):
         if self.transtion:
@@ -31,42 +33,43 @@ class Options:
     def inputs(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                exit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     self.running = False
                     self.options_img.set_alpha(0)
                 if event.key == pygame.K_DOWN:
-                    self.curr_options_items = (self.curr_options_items + 1) % len(self.options_items)
+                    self.curr_options_items = (self.curr_options_items + 1)%len(self.options_items)
                 if event.key == pygame.K_UP:
-                    self.curr_options_items = (self.curr_options_items - 1) % len(self.options_items)
+                    self.curr_options_items = (self.curr_options_items - 1)%len(self.options_items)
                 if event.key == pygame.K_RIGHT:
                     match self.options_items[self.curr_options_items]:
                         case "SOUND":
                             self.sound.toggle_bg_music_on()
-                            self.sound_system_index = (self.sound_system_index + 1) % len(self.sound_system)
+                            self.sound_system_index = (self.sound_system_index + 1)%len(self.sound_system)
                         case "RAIN":
-                            self.rain_system_index = (self.rain_system_index + 1) % len(self.rain_status)
+                            self.rain_system_index = (self.rain_system_index + 1)%len(self.rain_status)
                         case "RESOLUTION":
-                            self.resolution_index = (self.resolution_index + 1) % len(self.resolution)
+                            self.resolution_index = (self.resolution_index + 1)%len(self.resolution)
                         case "DIFFICULTY":
-                            self.index_game_mode = (self.index_game_mode + 1)  % len(self.game_modes)
+                            self.index_game_mode = (self.index_game_mode + 1)%len(self.game_modes)
                 if event.key == pygame.K_LEFT:
-                     match self.options_items[self.curr_options_items]:
+                    match self.options_items[self.curr_options_items]:
                         case "SOUND":
                             self.sound.toggle_bg_music_on()
-                            self.sound_system_index = (self.sound_system_index - 1) % len(self.sound_system)
+                            self.sound_system_index = (self.sound_system_index - 1)%len(self.sound_system)
                         case "RAIN":
-                            self.rain_system_index = (self.rain_system_index - 1) % len(self.rain_status)
+                            self.rain_system_index = (self.rain_system_index - 1)%len(self.rain_status)
                         case "RESOLUTION":
-                            self.resolution_index = (self.resolution_index - 1) % len(self.resolution)
+                            self.resolution_index = (self.resolution_index - 1)%len(self.resolution)
                         case "DIFFICULTY":
-                            self.index_game_mode = (self.index_game_mode - 1)  % len(self.game_modes)
+                            self.index_game_mode = (self.index_game_mode - 1)%len(self.game_modes)
                 if event.key == pygame.K_RETURN:
                     if self.options_items[self.curr_options_items] == "RESOLUTION" and self.resolution_index == 1:
-                        self.display_surface = pygame.display.set_mode((screen_width,screen_heigth),pygame.FULLSCREEN)
+                        self.display_surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT),pygame.FULLSCREEN)
+                        self.full_screen = not self.full_screen
                     elif self.options_items[self.curr_options_items] == "RESOLUTION" and self.resolution_index == 0:
-                        self.display_surface = pygame.display.set_mode((screen_width,screen_heigth))
+                        self.display_surface = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 
     def resize_text(self,curr_item_options):
         self.data = {
@@ -74,54 +77,87 @@ class Options:
             "rain_resize": 52,
             "difficulty_resize":120,
             "resolution_resize": 65,
-            "sound_active": (255,255,255),
-            "rain_active": (255,255,255),
-            "resolution_active": (255,255,255),
-            "difficulty_active": (255,255,255),
+            "sound_active": WHITE,
+            "rain_active": WHITE,
+            "resolution_active": WHITE,
+            "difficulty_active": WHITE,
         }
         match curr_item_options:
             case 0:
                 self.data["difficulty_resize"] = 140
-                self.data["difficulty_active"] = selected_color
+                self.data["difficulty_active"] = SELECTED_COLOR
             case 1:
                 self.data["sound_resize"] = 100
-                self.data["sound_active"] = selected_color
+                self.data["sound_active"] = SELECTED_COLOR
             case 2:
                 self.data["rain_resize"] = 78
-                self.data["rain_active"] = selected_color
+                self.data["rain_active"] = SELECTED_COLOR
             case 3:
                 self.data["resolution_resize"] = 85
-                self.data["resolution_active"] = selected_color
+                self.data["resolution_active"] = SELECTED_COLOR
     def text_handling(self):
         font = pygame.font.SysFont("Arial",40,False)
-        self.sound_on_of_text = font.render(self.sound_system[self.sound_system_index],False,self.data["sound_active"])
-        self.sound_on_of_text_rect = self.sound_on_of_text.get_rect(center=(screen_width/2 + self.data["sound_resize"],screen_heigth // 1.5))
-        self.rain_on_of_text = font.render(self.rain_status[self.rain_system_index],False,self.data["rain_active"])
-        self.rain_on_of_text_rect = self.rain_on_of_text.get_rect(center=(screen_width/2 + self.data["rain_resize"],screen_heigth // 1.2 - 40))
-        self.resolution_text = font.render(self.resolution[self.resolution_index],False,self.data["resolution_active"])
-        self.resolution_text_rect = self.resolution_text.get_rect(center=(screen_width/1.8 + self.data["resolution_resize"] ,screen_heigth - 80))
+        self.sound_on_of_text = font.render(
+                self.sound_system[self.sound_system_index], # text
+                False,  #AA
+                self.data["sound_active"] #TEXT COLOR
+                )
+        self.sound_on_of_text_rect = self.sound_on_of_text.get_rect(
+                center=(SCREEN_WIDTH/2 + self.data["sound_resize"],SCREEN_HEIGHT // 1.5)
+                )
+        self.rain_on_of_text = font.render(
+                self.rain_status[self.rain_system_index],
+                False,
+                self.data["rain_active"]
+                )
+        self.rain_on_of_text_rect = self.rain_on_of_text.get_rect(
+                center=(
+                SCREEN_WIDTH/2 + self.data["rain_resize"],
+                SCREEN_HEIGHT // 1.2 - 40)
+                )
+        self.resolution_text = font.render(
+                self.resolution[self.resolution_index],
+                False,
+                self.data["resolution_active"]
+                )
+        self.resolution_text_rect = self.resolution_text.get_rect(
+                center=(SCREEN_WIDTH/1.8 + self.data["resolution_resize"],
+                SCREEN_HEIGHT - 80)
+                )
 
-        self.difficulty_text = font.render(self.game_modes[self.index_game_mode],False,self.colors_difficulty[self.index_game_mode])
-        self.difficulty_text_rect = self.difficulty_text.get_rect(center=(screen_width/2 + self.data["difficulty_resize"],screen_heigth // 1.8))
+        self.difficulty_text = font.render(
+                self.game_modes[self.index_game_mode],
+                False,
+                self.colors_difficulty[self.index_game_mode]
+                )
+        self.difficulty_text_rect = self.difficulty_text.get_rect(
+                center=(SCREEN_WIDTH/2 + self.data["difficulty_resize"],
+                SCREEN_HEIGHT // 1.8)
+                )
     def draw_options(self):
         for i,opt_item in enumerate(self.options_items):
             if i == self.curr_options_items:
-                color = selected_color
+                color = SELECTED_COLOR
                 arrows = "X "
                 italic = True
             else:
-                color = (255,255,255)
+                color = WHITE
                 arrows = ""
                 italic = False
                 self.risize_text = 80
             add_more_spaces = ""
-            if i == 3 or i == 0:
+            if i in {3,0}:
                 add_more_spaces = " " *9
             font = pygame.font.SysFont("Arial",40,False,italic)
-            options_text = font.render(arrows + opt_item + " <    " +  add_more_spaces + "    >",False,color)
-            options_text_rect = options_text.get_rect(center=(screen_width/2,screen_heigth / 1.8 + (i * 80)))
+            options_text = font.render(
+                    arrows + opt_item + " <    " +  add_more_spaces + "    >",
+                    False,
+                    color)
+            options_text_rect = options_text.get_rect(
+                    center=(SCREEN_WIDTH/2,SCREEN_HEIGHT / 1.8 + (i * 80))
+                    )
             self.display_surface.blit(options_text,options_text_rect)
-        # calling method to resize the text 
+        # calling method to resize the text
         self.resize_text(self.curr_options_items)
         # setting up text informations
         self.text_handling()
@@ -135,10 +171,11 @@ class Options:
         self.running = True
         while self.running:
             self.inputs()
-            self.fps_txt = self.my_font.render("Fps:" + str(round(main_clock.get_fps(),1)),False,(255,255,255))
+            self.fps_txt = self.my_font.render(
+                    "Fps:" + str(round(main_clock.get_fps(),1)),False,WHITE)
             self.display_surface.fill((0,0,0))
             self.display_surface.blit(self.options_img,(-90,0))
             self.draw_options()
             self.display_surface.blit(self.fps_txt,(0,0))
-            main_clock.tick()
+            main_clock.tick(FPS)
             pygame.display.update()
