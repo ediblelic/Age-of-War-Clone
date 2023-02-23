@@ -26,7 +26,6 @@ class Game:
     def check_resolution(self,full_screen):
         if full_screen:
             self.display_surface = pygame.display.set_mode((1280,720),pygame.FULLSCREEN)
-            self.fr_stage = pygame.transform.scale(self.fr_stage,(1500,720))
     def camera_system(self,dt):
         self.mx, self.my = pygame.mouse.get_pos()
         if self.mx in range(1200,1280):
