@@ -42,7 +42,7 @@ class Main:
                     sys.exit()
             self.display_surface.fill((0,0,0))
             self.main_menu.run()
-          # self.introduction.run_story()
+           # self.introduction.run_story()
            # self.main_menu.difficulty() get difficulty level
             self.game.run(self.main_menu.is_full_screen())
             self.display_surface.blit(self.fps,(0,0))
@@ -51,4 +51,4 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     main.run()
-    
+
