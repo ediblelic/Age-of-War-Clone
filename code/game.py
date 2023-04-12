@@ -7,9 +7,9 @@ from enemy import Enemy
 from buildings import Building
 from projectiles import CatapultProjectil
 from camera import Camera
-class Game(Enemy, Camera,Building):
+class Game(Enemy, Camera, Building):
     def __init__(self):
-        super().__init__(15,35,500)
+        super().__init__(15,35,200)
         Camera.__init__(self)
         self.fr_stage = pygame.image.load("graphics/overworld/stages/fr_stage.jpg").convert()
         self.fr_stage_rect = self.fr_stage.get_rect()
@@ -18,6 +18,7 @@ class Game(Enemy, Camera,Building):
         self.ui = UI()
         # units
         self.sound = Sound()
+        self.running = True
 
     
     def set_resolution(self, full_screen):
@@ -176,6 +177,10 @@ class Game(Enemy, Camera,Building):
         self.display_surface.fill(ground)
         self.display_surface.blit(self.fr_stage, (self.camera_x, self.camera_y))
 
+    def game_over(self):
+        if self.ui.player_hp <= 0 or self.ui.enemy_hp <= 0:
+            self.running = False
+
     def gameplay(self,dt,difficulty,is_fps):
         self.draw_level()
         self.camera_system(dt)
@@ -184,9 +189,9 @@ class Game(Enemy, Camera,Building):
         self.building_collision(dt)
         self.ui.draw(self.player_coins,dt,self.camera_x,self.camera_y)
         self.render_fps(is_fps)
+        self.game_over()
 
     def run(self, full_screen,game_difficulty,fps_show):
-        self.running = True
         pygame.mouse.set_visible(True)
         self.set_resolution(full_screen)
         previous_time = time.time()

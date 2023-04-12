@@ -8,7 +8,7 @@ from random import randrange
 
 class Player:
     def __init__(self):
-        self.player_coins = 900
+        self.player_coins = 200
         self.player_units = UnitsGroup()
         self.sword_man = SwordMan(150, 600)
         self.archer = Archer(150, 600)
