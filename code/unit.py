@@ -15,16 +15,25 @@ class Status:
     movement: bool
     attack: bool
 
+class UnitsGroup(pygame.sprite.Group):
+    def draw(self, surface, offset_x, offset_y):
+        sprites = self.sprites()
+        surface_blit = surface.blit
+        for spr in sprites:
+            self.spritedict[spr] = surface_blit(spr.image, (spr.rect.x + offset_x, spr.rect.y + offset_y))
+        self.lostsprites = []
+
 
 class SwordMan(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
         # LOADING SPRITES
+        self.name = "SwordMan"
         self.load_sprites()
         self.image = self.sword_man_walking[self.current_sword_man_sprite]
         self.rect = self.image.get_rect(topleft=(pos_x, pos_y))
         # SWORDMAN STATUS
-        self.sword_man_status = Status(15, 600, 2, 80, 8, True, False)
+        self.status = Status(15, 2000, 1100, 100, 8, True, False)
         self.vector_direction = pygame.math.Vector2(self.rect.topleft)
 
     def load_sprites(self):
@@ -44,16 +53,16 @@ class SwordMan(pygame.sprite.Sprite):
         self.attack_animation_sprite = 0
 
     def walking_animation(self, dt):
-        if self.sword_man_status.movement:
-            self.current_sword_man_sprite += (self.sword_man_status.animation_time * dt)
+        if self.status.movement:
+            self.current_sword_man_sprite += (self.status.animation_time * dt)
             if self.current_sword_man_sprite >= len(self.sword_man_walking):
                 self.current_sword_man_sprite = 0
 
     def attacking_animations(self, dt, enemy):
-        self.sword_man_status.attack = True
-        self.sword_man_status.movement = False
-        if self.sword_man_status.attack:
-            self.attack_animation_sprite += (self.sword_man_status.animation_time * dt)
+        self.status.attack = True
+        self.status.movement = False
+        if self.status.attack:
+            self.attack_animation_sprite += (self.status.animation_time * dt)
             if self.attack_animation_sprite >= len(self.sword_man_attack):
                 self.attack_animation_sprite = 0
             if enemy == -1:
@@ -64,26 +73,46 @@ class SwordMan(pygame.sprite.Sprite):
 
     def movement(self, dt, enemy):
         prev_x = self.vector_direction.x
-        if self.sword_man_status.movement:
-            self.vector_direction.x += (self.sword_man_status.move_speed * dt) * enemy
+        if self.status.movement:
+            self.vector_direction.x += (self.status.move_speed * dt) * enemy
             self.rect.x = round(self.vector_direction.x)
         if self.vector_direction.x <= prev_x and enemy == -1:
             self.image = pygame.transform.flip(self.sword_man_walking[int(self.current_sword_man_sprite)], True, False)
         else:
             self.image = self.sword_man_walking[int(self.current_sword_man_sprite)]
 
-    def stop_movement(self):
-        self.sword_man_status.movement = False
 
-    def hp(self):
-        return self.sword_man_status.health
+    def stop_movement(self):
+        self.status.movement = False
+
+
+    def enabled_movement(self):
+        self.status.movement = True
+
+
+    def draw_hp(self,camera):
+        hp_width = self.status.health / 40
+        hp_height = 4
+        offset_x = self.rect.x + camera + 8
+        offset_y = self.rect.y + 80
+        try:
+            player_hp = pygame.Surface((hp_width, hp_height))
+            player_hp.fill((255,0,0))
+            self.display_surface.blit(player_hp,(offset_x,offset_y))
+        except pygame.error:
+            pass
 
     def demage(self):
-        return self.sword_man_status.demage
+        return self.status.demage
+    
+    def isattacked(self):
+        if self.attack_animation_sprite > 8:
+            return True
+        return False
+    
 
     def attack(self, dt, enemy):
         self.attacking_animations(dt, enemy)
-        return self.hp() - self.demage()
 
     def update(self, dt, enemy):
         self.movement(dt, enemy)
@@ -94,11 +123,12 @@ class Archer(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__()
         # Loading sprites
+        self.name = "Archer"
         self.load_sprites()
         self.image = self.archer_walking[self.index_walking_sprite]
         self.rect = self.image.get_rect(topleft=(pos_x, pos_y))
         # ARCHMAN STATUS
-        self.archer_status = Status(35, 50, 4, 75, 12, True, False)
+        self.status = Status(35, 3000, 740, 80, 12, True, False)
         self.vector_direction = pygame.math.Vector2(self.rect.topleft)
 
     def load_sprites(self):
@@ -117,35 +147,72 @@ class Archer(pygame.sprite.Sprite):
         self.index_attacking_sprite = 0
 
     def walking_animation(self, dt):
-        if self.archer_status.movement:
-            self.index_walking_sprite += (self.archer_status.animation_time * dt)
+        if self.status.movement:
+            self.index_walking_sprite += (self.status.animation_time * dt)
             if self.index_walking_sprite >= len(self.archer_walking):
                 self.index_walking_sprite = 0
 
-    def attacking_animations(self, dt):
-        self.archer_status.attack = True
-        self.archer_status.movement = False
-        if self.archer_status.attack:
-            self.index_attacking_sprite += (self.archer_status.animation_time * dt)
+    def attacking_animations(self, dt, isenemy):
+        self.status.attack = True
+        self.status.movement = False
+        if self.status.attack:
+            self.index_attacking_sprite += (self.status.animation_time * dt)
             if self.index_attacking_sprite >= len(self.archer_attack):
                 self.index_attacking_sprite = 0
-            self.image = self.archer_attack[int(self.index_attacking_sprite)]
-
+            if isenemy ==  1:
+                self.image = pygame.transform.flip(
+                    self.archer_attack[int(self.index_attacking_sprite)],
+                    True,
+                    False
+                    )
+            else:
+                self.image = self.archer_attack[int(self.index_attacking_sprite)]
+    def release_arrow_time(self):
+        if self.index_attacking_sprite > 8.0 and self.index_attacking_sprite < 9.0:
+            return True
+        return False
     def movement(self, dt, enemy):
         prev_x = self.vector_direction.x
-        if self.archer_status.movement:
-            self.vector_direction.x += (self.archer_status.move_speed * dt) * enemy
+        if self.status.movement:
+            self.vector_direction.x += (self.status.move_speed * dt) * enemy
             self.rect.x = round(self.vector_direction.x)
-        if self.vector_direction.x < prev_x:
+        if self.vector_direction.x < prev_x and enemy == -1:
             self.image = pygame.transform.flip(self.archer_walking[int(self.index_walking_sprite)], True, False)
         else:
             self.image = self.archer_walking[int(self.index_walking_sprite)]
 
     def stop_movement(self):
-        self.archer_status.movement = False
+        self.status.movement = False
 
-    def attack(self, dt):
-        self.attacking_animations(dt)
+
+    def enabled_movement(self):
+        self.status.movement = True
+
+
+    def draw_hp(self,camera):
+        hp_width = self.status.health / 60
+        hp_height = 4
+        offset_x = self.rect.x + camera + 8
+        offset_y = self.rect.y + 115
+        try:
+            player_hp = pygame.Surface((hp_width, hp_height))
+            player_hp.fill((255,0,0))
+            self.display_surface.blit(player_hp,(offset_x,offset_y))
+        except pygame.error:
+            pass
+        
+    def demage(self):
+        return self.status.demage
+    
+
+    def isattacked(self):
+        if self.index_attacking_sprite > 8:
+            return True
+        return False
+    
+
+    def attack(self, dt,isenemy):
+        self.attacking_animations(dt, isenemy)
 
     def update(self, dt, enemy):
         self.movement(dt, enemy)

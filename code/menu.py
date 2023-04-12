@@ -1,6 +1,6 @@
 import sys
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock, FPS
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
 from options import Options
 from singleton import Singleton
 
@@ -50,6 +50,9 @@ class Menu(Singleton):
 
     def difficutly(self):
         return self.options.game_modes[self.options.index_game_mode]
+    
+    def show_fps(self):
+        return self.options.rain_status[self.options.rain_system_index]
 
     def is_full_screen(self):
         return self.options.full_screen
@@ -69,19 +72,18 @@ class Menu(Singleton):
             text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.5 + (i * 100)))
             self.display_surface.blit(text, text_rect)
 
+    def render_fps(self,isfps):
+        if isfps == "ON":
+            self.fps_txt = self.my_font.render("Fps:" + str(round(main_clock.get_fps(), 1)), False, WHITE)
+            self.display_surface.blit(self.fps_txt, (0, 0))
+
     def run(self):
         while self.running:
             self.menu_transition()
-            self.fps_txt = self.my_font.render(
-                "Fps:" + str(round(main_clock.get_fps(), 1)), False, WHITE
-            )
-            # navigation menu
             self.inputs_controls()
-            # bg menu img
             self.display_surface.fill((0, 0, 0))
             self.display_surface.blit(self.menu_img, (-90, 0))
-            # drawing menu
             self.draw_menu()
-            self.display_surface.blit(self.fps_txt, (0, 0))
-            main_clock.tick(FPS)
+            self.render_fps(self.show_fps())
+            main_clock.tick()
             pygame.display.update()

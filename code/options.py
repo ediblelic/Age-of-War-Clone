@@ -1,6 +1,6 @@
 import sys
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, FPS, main_clock
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
 from sound import Sound
 
 
@@ -11,7 +11,7 @@ class Options:
         self.display_surface = pygame.display.get_surface()
         self.rain_status = ["OFF", "ON"]
         self.sound_system = ['OFF', 'ON']
-        self.options_items = ["DIFFICULTY", "SOUND", "RAIN", "RESOLUTION"]
+        self.options_items = ["DIFFICULTY", "SOUND", "FPS", "RESOLUTION"]
         self.resolution = [f"{SCREEN_WIDTH}x{SCREEN_HEIGHT}", "Fullscreen"]
         self.game_modes = ["EASY", "MEDIUM", "HARD"]
         self.colors_difficulty = ["#33de61", "#e38819", "#e32a19"]
@@ -33,46 +33,63 @@ class Options:
             if self.options_img.get_alpha() > 255:
                 self.transtion = False
 
+    def handle_quit_event(self, event):
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+    def handle_keydown_event(self, event):
+        if event.key == pygame.K_ESCAPE:
+            self.running = False
+            self.options_img.set_alpha(0)
+        if event.key == pygame.K_DOWN:
+            self.curr_options_items = (self.curr_options_items + 1) % len(self.options_items)
+        if event.key == pygame.K_UP:
+            self.curr_options_items = (self.curr_options_items - 1) % len(self.options_items)
+        if event.key == pygame.K_RIGHT:
+            self.handle_right_key()
+        if event.key == pygame.K_LEFT:
+            self.handle_left_key()
+        if event.key == pygame.K_RETURN:
+            self.handle_return_key()
+
+    def handle_right_key(self):
+        option = self.options_items[self.curr_options_items]
+        if option == "SOUND":
+            self.sound.toggle_bg_music_on()
+            self.sound_system_index = (self.sound_system_index + 1) % len(self.sound_system)
+        elif option == "FPS":
+            self.rain_system_index = (self.rain_system_index + 1) % len(self.rain_status)
+        elif option == "RESOLUTION":
+            self.resolution_index = (self.resolution_index + 1) % len(self.resolution)
+        elif option == "DIFFICULTY":
+            self.index_game_mode = (self.index_game_mode + 1) % len(self.game_modes)
+
+    def handle_left_key(self):
+        option = self.options_items[self.curr_options_items]
+        if option == "SOUND":
+            self.sound.toggle_bg_music_on()
+            self.sound_system_index = (self.sound_system_index - 1) % len(self.sound_system)
+        elif option == "FPS":
+            self.rain_system_index = (self.rain_system_index - 1) % len(self.rain_status)
+        elif option == "RESOLUTION":
+            self.resolution_index = (self.resolution_index - 1) % len(self.resolution)
+        elif option == "DIFFICULTY":
+            self.index_game_mode = (self.index_game_mode - 1) % len(self.game_modes)
+
+    def handle_return_key(self):
+        option = self.options_items[self.curr_options_items]
+        if option == "RESOLUTION" and self.resolution_index == 1:
+            self.display_surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+            self.full_screen = not self.full_screen
+        elif option == "RESOLUTION" and self.resolution_index == 0:
+            self.display_surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
     def inputs(self):
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
+            self.handle_quit_event(event)
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.running = False
-                    self.options_img.set_alpha(0)
-                if event.key == pygame.K_DOWN:
-                    self.curr_options_items = (self.curr_options_items + 1) % len(self.options_items)
-                if event.key == pygame.K_UP:
-                    self.curr_options_items = (self.curr_options_items - 1) % len(self.options_items)
-                if event.key == pygame.K_RIGHT:
-                    match self.options_items[self.curr_options_items]:
-                        case "SOUND":
-                            self.sound.toggle_bg_music_on()
-                            self.sound_system_index = (self.sound_system_index + 1) % len(self.sound_system)
-                        case "RAIN":
-                            self.rain_system_index = (self.rain_system_index + 1) % len(self.rain_status)
-                        case "RESOLUTION":
-                            self.resolution_index = (self.resolution_index + 1) % len(self.resolution)
-                        case "DIFFICULTY":
-                            self.index_game_mode = (self.index_game_mode + 1) % len(self.game_modes)
-                if event.key == pygame.K_LEFT:
-                    match self.options_items[self.curr_options_items]:
-                        case "SOUND":
-                            self.sound.toggle_bg_music_on()
-                            self.sound_system_index = (self.sound_system_index - 1) % len(self.sound_system)
-                        case "RAIN":
-                            self.rain_system_index = (self.rain_system_index - 1) % len(self.rain_status)
-                        case "RESOLUTION":
-                            self.resolution_index = (self.resolution_index - 1) % len(self.resolution)
-                        case "DIFFICULTY":
-                            self.index_game_mode = (self.index_game_mode - 1) % len(self.game_modes)
-                if event.key == pygame.K_RETURN:
-                    if self.options_items[self.curr_options_items] == "RESOLUTION" and self.resolution_index == 1:
-                        self.display_surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
-                        self.full_screen = not self.full_screen
-                    elif self.options_items[self.curr_options_items] == "RESOLUTION" and self.resolution_index == 0:
-                        self.display_surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+                self.handle_keydown_event(event)
+
 
     def resize_text(self, curr_item_options):
         self.data = {
@@ -93,7 +110,7 @@ class Options:
                 self.data["sound_resize"] = 100
                 self.data["sound_active"] = SELECTED_COLOR
             case 2:
-                self.data["rain_resize"] = 78
+                self.data["rain_resize"] = 70
                 self.data["rain_active"] = SELECTED_COLOR
             case 3:
                 self.data["resolution_resize"] = 85
@@ -140,6 +157,8 @@ class Options:
         )
 
     def draw_options(self):
+        self.display_surface.fill((0, 0, 0))
+        self.display_surface.blit(self.options_img, (-90, 0))
         for i, opt_item in enumerate(self.options_items):
             if i == self.curr_options_items:
                 color = SELECTED_COLOR
@@ -172,16 +191,17 @@ class Options:
         self.display_surface.blit(self.rain_on_of_text, self.rain_on_of_text_rect)
         self.display_surface.blit(self.resolution_text, self.resolution_text_rect)
         self.options_transtion()
+        
+    def render_fps(self,isfps):
+        if isfps == "ON":
+            self.fps_txt = self.my_font.render("Fps:" + str(round(main_clock.get_fps(), 1)), False, WHITE)
+            self.display_surface.blit(self.fps_txt, (0, 0))
 
     def run(self):
         self.running = True
         while self.running:
             self.inputs()
-            self.fps_txt = self.my_font.render(
-                "Fps:" + str(round(main_clock.get_fps(), 1)), False, WHITE)
-            self.display_surface.fill((0, 0, 0))
-            self.display_surface.blit(self.options_img, (-90, 0))
             self.draw_options()
-            self.display_surface.blit(self.fps_txt, (0, 0))
-            main_clock.tick(FPS)
+            self.render_fps(self.rain_status[self.rain_system_index])
+            main_clock.tick()
             pygame.display.update()

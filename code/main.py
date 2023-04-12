@@ -1,18 +1,16 @@
 import sys
 import pygame
 from game import Game
-from settings import SCREEN_WIDTH, SCREEN_HEIGHT, FPS, main_clock
+from settings import SCREEN_WIDTH, SCREEN_HEIGHT, main_clock
 from menu import Menu
 from introduction import Introduction
-
-
 class Main:
     """
     The main class for the Age of War game. Handles the game loop and manages game state.
 
     Attributes:
     - display_surface (pygame.Surface): the surface to draw game elements on
-    - clock (pygame.time.Clock): the clock to control the game's FPS
+    - clock (pygame.time.Clock): the clock to control        the game's FPS
     - main_menu (Menu): the game's main menu
     - game (Game): the game itself
     - introduction (Introduction): the game's introduction
@@ -28,7 +26,6 @@ class Main:
         self.game = Game()
         self.introduction = Introduction()
         self.my_font = pygame.font.SysFont("Arial", 20)
-
     def run(self):
         """
         The game loop for the Age of War game.
@@ -45,11 +42,10 @@ class Main:
                     sys.exit()
             self.display_surface.fill((0, 0, 0))
             self.main_menu.run()
-            self.introduction.run_story()
-            # self.main_menu.difficulty() get difficulty level
-            self.game.run(self.main_menu.is_full_screen())
+            self.introduction.run_story(self.main_menu.show_fps())
+            self.game.run(self.main_menu.is_full_screen(),self.main_menu.difficutly(), self.main_menu.show_fps())
             pygame.display.update()
-            main_clock.tick(FPS)
+            main_clock.tick()
 
 
 if __name__ == "__main__":
