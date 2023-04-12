@@ -1,4 +1,4 @@
-import pygame, time
+import pygame
 # Constants
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720

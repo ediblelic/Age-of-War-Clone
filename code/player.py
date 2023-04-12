@@ -4,8 +4,6 @@ from projectiles import Arrow, CatapultProjectil
 from special import FireBall
 from buildings import Building
 from random import randrange
-
-
 class Player:
     def __init__(self):
         self.player_coins = 200

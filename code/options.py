@@ -2,8 +2,6 @@ import sys
 import pygame
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
 from sound import Sound
-
-
 class Options:
     def __init__(self):
         pygame.font.init()

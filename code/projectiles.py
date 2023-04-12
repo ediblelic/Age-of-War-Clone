@@ -15,7 +15,6 @@ class Arrow(pygame.sprite.Sprite):
         self.rect.x = self.vec_direction.x
     
 
-
 class CatapultProjectil(pygame.sprite.Sprite):
     def __init__(self,pos_x,pos_y):
         super().__init__()

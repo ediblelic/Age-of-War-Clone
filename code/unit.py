@@ -3,8 +3,6 @@ from pygame.image import load
 from settings import WARRIOR_PATH as warrior
 from settings import ARCHER_PATH as archer
 import dataclasses
-
-
 @dataclasses.dataclass
 class Status:
     cost: int

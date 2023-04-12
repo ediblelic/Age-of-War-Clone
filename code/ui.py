@@ -1,8 +1,6 @@
 import sys
 import pygame
 from settings import WHITE
-
-
 class UI:
     def __init__(self):
         # Load the menu UI, coin UI, and special UI images

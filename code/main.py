@@ -1,4 +1,4 @@
-import sys, time
+import sys
 import pygame
 from game import Game
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, main_clock, WHITE
@@ -31,7 +31,7 @@ class Main:
         if fps == "ON":
             self.fps_txt = self.my_font.render("Fps:" + str(round(main_clock.get_fps(), 1)), False, WHITE)
             self.display_surface.blit(self.fps_txt, (0, 0))
-        self.timer -= 0.1
+        self.timer -= 0.01
         if self.timer > 0:
             self.end_screen = pygame.image.load("graphics/overworld/endgame.jpg").convert()
             self.display_surface.blit(self.end_screen,(0,0))

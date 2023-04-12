@@ -8,7 +8,6 @@ class FireBall(pygame.sprite.Sprite):
         self.fireball_val = 300
         self.vec = pygame.math.Vector2(self.rect.topleft)
         
-
     def update(self,dt):
         self.vec.y += self.fireball_val * dt
         self.rect.y = self.vec.y

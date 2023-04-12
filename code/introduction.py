@@ -1,7 +1,5 @@
 import pygame
 from settings import WHITE, main_clock
-
-
 class Introduction:
     def __init__(self):
         self.my_font = pygame.font.SysFont("Arial", 20)

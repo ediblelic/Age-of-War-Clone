@@ -3,8 +3,6 @@ import pygame
 from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
 from options import Options
 from singleton import Singleton
-
-
 class Menu(Singleton):
     def __init__(self):
         super().__init__()
