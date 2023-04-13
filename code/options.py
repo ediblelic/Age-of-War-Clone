@@ -1,6 +1,6 @@
 import sys
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock, FPS
 from sound import Sound
 class Options:
     def __init__(self):
@@ -18,7 +18,7 @@ class Options:
         self.sound_system_index = 0
         self.rain_system_index = 0
         self.curr_options_items = 0
-        self.options_img = pygame.image.load("graphics/main_menu_images/options_img.jpg").convert()
+        self.options_img = pygame.image.load("../graphics/main_menu_images/options_img.jpg").convert()
         self.sound = Sound()
         self.options_img.set_alpha(0)
         self.transtion_step = 5
@@ -201,5 +201,5 @@ class Options:
             self.inputs()
             self.draw_options()
             self.render_fps(self.rain_status[self.rain_system_index])
-            main_clock.tick()
+            main_clock.tick(FPS)
             pygame.display.update()

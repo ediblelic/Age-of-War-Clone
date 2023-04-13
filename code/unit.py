@@ -31,7 +31,7 @@ class SwordMan(pygame.sprite.Sprite):
         self.image = self.sword_man_walking[self.current_sword_man_sprite]
         self.rect = self.image.get_rect(topleft=(pos_x, pos_y))
         # SWORDMAN STATUS
-        self.status = Status(15, 2000, 1100, 100, 8, True, False)
+        self.status = Status(15, 2000, 1700, 100, 8, True, False)
         self.vector_direction = pygame.math.Vector2(self.rect.topleft)
 
     def load_sprites(self):
@@ -126,7 +126,7 @@ class Archer(pygame.sprite.Sprite):
         self.image = self.archer_walking[self.index_walking_sprite]
         self.rect = self.image.get_rect(topleft=(pos_x, pos_y))
         # ARCHMAN STATUS
-        self.status = Status(35, 3000, 740, 80, 12, True, False)
+        self.status = Status(35, 3000, 1000, 50, 12, True, False)
         self.vector_direction = pygame.math.Vector2(self.rect.topleft)
 
     def load_sprites(self):

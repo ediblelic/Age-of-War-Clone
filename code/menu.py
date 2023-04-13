@@ -1,6 +1,6 @@
 import sys
 import pygame
-from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock
+from settings import SCREEN_HEIGHT, SCREEN_WIDTH, SELECTED_COLOR, WHITE, main_clock, FPS
 from options import Options
 from singleton import Singleton
 class Menu(Singleton):
@@ -12,7 +12,7 @@ class Menu(Singleton):
         self.menu_items = ["START", "OPTIONS", "QUIT"]
         self.current_menu_items = 0
         self.keyup_pressed = False
-        self.menu_img = pygame.image.load("graphics/main_menu_images/menu_image.jpg").convert()
+        self.menu_img = pygame.image.load("../graphics/main_menu_images/menu_image.jpg").convert()
         pygame.mouse.set_visible(False)
         self.options = Options()
         self.running = True
@@ -83,5 +83,5 @@ class Menu(Singleton):
             self.display_surface.blit(self.menu_img, (-90, 0))
             self.draw_menu()
             self.render_fps(self.show_fps())
-            main_clock.tick()
+            main_clock.tick(FPS)
             pygame.display.update()

@@ -3,13 +3,13 @@ class Sound:
     def __init__(self):
         pygame.mixer.init()
         self.music_on = False
-        self.bg_music = pygame.mixer.Sound("audio/bg_sound.mp3")
+        self.bg_music = pygame.mixer.Sound("../audio/bg_sound.mp3")
         self.bg_music.set_volume(0.5)
 
         self.sound_effects = {
-           "fireball": pygame.mixer.Sound("audio/effects/special.wav"),
-           "add_coin": pygame.mixer.Sound("audio/effects/coin.wav"),
-           "catapult": pygame.mixer.Sound("audio/effects/catapult.wav")
+           "fireball": pygame.mixer.Sound("../audio/effects/special.wav"),
+           "add_coin": pygame.mixer.Sound("../audio/effects/coin.wav"),
+           "catapult": pygame.mixer.Sound("../audio/effects/catapult.wav")
         }
         self.set_effect_volume(0.1)
 
