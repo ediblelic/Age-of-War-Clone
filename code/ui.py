@@ -56,7 +56,7 @@ class UI:
 
     def load_miniguns_icons(self):
         self.isbought = ""
-        self.price = 850
+        self.price = 150
         self.fr_mini_gun = pygame.image.load(
             "../graphics/overworld/ui/miniguns/fr_mini_gun.png"
         ).convert_alpha()
@@ -78,7 +78,7 @@ class UI:
 
     def miniguns_cost_text(self):
         my_font = pygame.font.SysFont("Arial", 15)
-        minigun = my_font.render("850$", False, (255, 255, 255))
+        minigun = my_font.render("150$", False, (255, 255, 255))
         self.display_surface.blit(minigun, (953, 60))
 
     def load_menu_items(self):
